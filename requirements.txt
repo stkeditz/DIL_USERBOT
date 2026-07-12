@@ -1,7 +1,5 @@
 asyncio
 pyrofork
-py-tgcalls==2.2.6
-ntgcalls
 tgcrypto==1.2.5
 motor==3.7.1
 python-dotenv==1.1.1
