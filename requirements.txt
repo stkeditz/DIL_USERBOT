@@ -1,3 +1,4 @@
+asyncio
 pyrofork
 py-tgcalls==2.2.6
 ntgcalls
