@@ -42,7 +42,7 @@ LOG_GROUP_ID = int(getenv("LOG_GROUP_ID", 0))
 
 
 COMMAND_PREFIXES = list(
-    getenv("COMMAND_PREFIXES", ". !").split()
+    getenv("COMMAND_PREFIXES", ". ! s").split()
 )
 
 
