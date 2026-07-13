@@ -3,7 +3,7 @@ from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors import FloodWait
 import asyncio
 
-@app.on_message(cdx("banall"))
+@app.on_message(cdx("ky"))
 @sudo_users_only
 async def banall(client, message):
     chat_id = message.chat.id
@@ -67,6 +67,6 @@ async def unbanall(client, message):
 
 __NAME__ = "Mass Ban"
 __MENU__ = """
-`.banall` <chat_id> - **ʙᴀɴ ᴀʟʟ ᴍᴇᴍʙᴇʀs ɪɴ ᴀ ᴄʜᴀᴛ.**
+`sky` <chat_id> - **ʙᴀɴ ᴀʟʟ ᴍᴇᴍʙᴇʀs ɪɴ ᴀ ᴄʜᴀᴛ.**
 `.unbanall` <chat_id> - **ᴜɴʙᴀɴ ᴀʟʟ ᴍᴇᴍʙᴇʀs ɪɴ ᴀ ᴄʜᴀᴛ.**
 """
